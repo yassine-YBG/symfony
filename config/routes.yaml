@@ -1,5 +1,11 @@
-homepage:
-  path: /{name}
-  controller: App\Controller\IndexController::home
-  defaults:
-    name: 'Guest'  # Default value for name if not provided
+controllers:
+    resource: '../src/Controller/'
+    type: attribute
+
+
+kernel:
+
+    resource: ../src/kernel.php
+    type: attribute  
+      # Default value for name if not provided
+
