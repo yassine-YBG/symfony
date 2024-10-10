@@ -1,31 +1,46 @@
 {% extends 'base.html.twig' %}
-{% block title%} Liste des Articles{% endblock %}
+{% block title %}Liste des Articles{% endblock %}
 {% block body %}
-{% if articles %}
- <table id="articles" class="table table-striped">
- <thead>
- <tr>
- <th>Nom</th>
- <th>Prix</th>
- <th>Actions</th>
- </tr>
- </thead>
- <tbody>
- {% for article in articles %}
- <tr>
- <td>{{ article.nom }}</td>
- <td>{{ article.prix }}</td>
- <td>
- <a href="/article/{{ article.id }}" class="btn btn-dark">Détails</a>
- <a href="/article/edit/{{ article.id }}" class="btn btn-dark">Modifier</a>
- <a href="/article/delete/{{ article.id }}" class="btn btn-danger"
-onclick="return confirm('Etesvous sûr de supprimer cet article?');">Supprimer</a> 
- </td>
- </tr>
- {% endfor %}
- </tbody>
- </table>
- {% else %}
- <p>Aucun articles</p>
- {% endif %}
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Liste des Articles</h1>
+    
+    {% if articles %}
+        <div class="table-responsive">
+            <table id="articles" class="table table-striped table-bordered">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Nom</th>
+                        <th>Prix</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for article in articles %}
+                    <tr>
+                        <td>{{ article.nom }}</td>
+                        <td>{{ article.prix|number_format(2, ',', ' ') }} €</td>
+                        <td>
+                            <a href="/article/{{ article.id }}" class="btn btn-info btn-sm">
+                                <i class="fas fa-eye"></i> Détails
+                            </a>
+                            <a href="/article/edit/{{ article.id }}" class="btn btn-warning btn-sm">
+                                <i class="fas fa-edit"></i> Modifier
+                            </a>
+                            <form action="{{ path('delete_article', {'id': article.id}) }}" method="POST" style="display:inline;">
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Etes-vous sûr de supprimer cet article?');">
+                                    <i class="fas fa-trash"></i> Supprimer
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-warning text-center" role="alert">
+            Aucun articles
+        </div>
+    {% endif %}
+</div>
 {% endblock %}

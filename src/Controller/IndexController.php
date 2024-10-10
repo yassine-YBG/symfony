@@ -1,5 +1,6 @@
 <?php
 namespace App\Controller;
+use App\Form\ArticleType;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -54,29 +55,23 @@ class IndexController extends AbstractController
     #[Route('/article/new', name: 'new_article', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
+        // Create a new article instance
         $article = new Article();
 
-        // Create the form
-        $form = $this->createFormBuilder($article)
-            ->add('nom', TextType::class)
-            ->add('prix', TextType::class)
-            ->add('save', SubmitType::class, ['label' => 'Créer'])
-            ->getForm();
+        // Create the form using the ArticleType
+        $form = $this->createForm(ArticleType::class, $article);
 
         // Handle the request
         $form->handleRequest($request);
 
-        // Check if form is submitted and valid
+        // Check if the form is submitted and valid
         if ($form->isSubmitted() && $form->isValid()) {
-            // Get the data from the form
-            $article = $form->getData();
-
-            // Persist the entity and save it in the database
+            // Persist the new article
             $entityManager->persist($article);
             $entityManager->flush();
 
-            // Redirect to the article list or any other page
-            return $this->redirectToRoute('article_list');
+            // Redirect to the article list
+            return $this->redirectToRoute('home');
         }
 
         // Render the form view
@@ -85,31 +80,6 @@ class IndexController extends AbstractController
         ]);
     }
 
-
-
-
-
-
-
-
-
-
- #[Route('/article/{id}', name: 'article_show')]
-    public function show(int $id, EntityManagerInterface $entityManager): Response
-    {
-        // Fetch the article by ID
-        $article = $entityManager->getRepository(Article::class)->find($id);
-
-        // Handle the case when the article is not found (optional)
-        if (!$article) {
-            throw $this->createNotFoundException('Article not found');
-        }
-
-        // Render the article view
-        return $this->render('articles/show.html.twig', [
-            'article' => $article,
-        ]);
-    }
 
 
 
@@ -131,25 +101,18 @@ class IndexController extends AbstractController
         }
 
         // Create the form
-        $form = $this->createFormBuilder($article)
-            ->add('nom', TextType::class)
-            ->add('prix', TextType::class)
-            ->add('save', SubmitType::class, [
-                'label' => 'Modifier'
-            ])
-            ->getForm();
+        $form = $this->createForm(ArticleType::class, $article);
 
         // Handle the request
         $form->handleRequest($request);
 
         // Check if the form is submitted and valid
         if ($form->isSubmitted() && $form->isValid()) {
-            // Persist the changes and flush the entity
-            $entityManager->persist($article);
+            // Persist the changes (not necessary to call persist here as $article is already managed)
             $entityManager->flush();
 
             // Redirect to the article list
-            return $this->redirectToRoute('article_list');
+            return $this->redirectToRoute('home');
         }
 
         // Render the form view
@@ -158,27 +121,59 @@ class IndexController extends AbstractController
         ]);
     }
 
-    #[Route('/article/delete/{id}', name: 'delete_article', methods: ['DELETE'])]
-    public function delete(Request $request, int $id, EntityManagerInterface $entityManager): Response
-    {
-        // Fetch the article by ID
-        $article = $entityManager->getRepository(Article::class)->find($id);
 
-        // Handle case when the article is not found
-        if (!$article) {
-            throw $this->createNotFoundException('Article not found');
-        }
 
-        // Remove the article
-        $entityManager->remove($article);
-        $entityManager->flush();
 
-        // Return a response (JSON or redirect)
-        return $this->redirectToRoute('article_list');
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    #[Route('/article/delete/{id}', name: 'delete_article', methods: ['POST'])]
+public function delete(Request $request, int $id, EntityManagerInterface $entityManager): Response
+{
+    // Fetch the article by ID
+    $article = $entityManager->getRepository(Article::class)->find($id);
+
+    // Handle case when the article is not found
+    if (!$article) {
+        throw $this->createNotFoundException('Article not found');
     }
 
+    // Remove the article
+    $entityManager->remove($article);
+    $entityManager->flush();
+
+    // Redirect to the article list after deletion
+    return $this->redirectToRoute('home');
+}
 
 
+#[Route('/article/{id}', name: 'article_show')]
+public function show(int $id, EntityManagerInterface $entityManager): Response
+{
+    $article = $entityManager->getRepository(Article::class)->find($id);
+
+    if (!$article) {
+        throw $this->createNotFoundException('Article not found');
+    }
+
+    return $this->render('articles/show.html.twig', [
+        'article' => $article,
+    ]);
+}
 
 
 
