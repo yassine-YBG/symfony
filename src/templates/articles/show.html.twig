@@ -1,8 +1,26 @@
 {% extends 'base.html.twig' %}
 {% block title %}{{ article.nom }}{% endblock %}
 {% block body %}
-<h1>{{ article.nom }}</h1>
-<p>{{ article.prix }}</p>
-<hr>
-<a href="/">Retour</a>
+<div class="container mt-5">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h1 class="card-title text-center">{{ article.nom }}</h1>
+            <hr>
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <p class="h4"><strong>Prix:</strong> {{ article.prix|number_format(2, ',', ' ') }} €</p>
+                </div>
+                <div class="col-md-6">
+                    <p class="h4"><strong>Catégorie:</strong> {{ article.category.titre }}</p>
+                </div>
+            </div>
+            <hr>
+            <div class="text-center mt-4">
+                <a href="/" class="btn btn-primary btn-lg">
+                    <i class="fas fa-arrow-left"></i> Retour à la liste
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

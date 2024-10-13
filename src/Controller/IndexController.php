@@ -10,6 +10,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use App\Entity\Category;
+use App\Form\CategoryType;
+
 
 class IndexController extends AbstractController
 {
@@ -174,6 +177,31 @@ public function show(int $id, EntityManagerInterface $entityManager): Response
         'article' => $article,
     ]);
 }
+
+
+
+
+#[Route('/category/newCat', name: 'new_category', methods: ['GET', 'POST'])]
+    public function newCategory(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $category = new Category();
+        $form = $this->createForm(CategoryType::class, $category);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($category);
+            $entityManager->flush();
+
+            // Optionally, redirect to a different page after success
+            // return $this->redirectToRoute('category_list');
+            // Redirect to the article list
+            return $this->redirectToRoute('home');
+        }
+
+        return $this->render('articles/newCategory.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
 
 
 
